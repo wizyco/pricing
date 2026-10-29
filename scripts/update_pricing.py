@@ -20,8 +20,8 @@ from pathlib import Path
 PRICING_FILE = Path("pricing.json")
 
 SOURCE_URL = (
-    "https://raw.githubusercontent.com/BerriAI/litellm/"
-    "main/model_prices_and_costs.json"
+    'https://raw.githubusercontent.com/',          
+    'BerriAI/litellm/refs/heads/main/model_prices_and_context_window.json'
 )
 
 # Optional aliases for models whose catalog IDs differ from yours.
