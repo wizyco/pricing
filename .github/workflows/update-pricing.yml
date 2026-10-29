@@ -1,0 +1,53 @@
+name: Update AI Model Pricing
+
+on:
+  schedule:
+    # Daily at 08:15 UTC
+    - cron: "15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: update-model-pricing
+  cancel-in-progress: false
+
+jobs:
+  update-pricing:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Update pricing
+        run: python scripts/update_pricing.py
+
+      - name: Validate pricing JSON
+        run: python -m json.tool pricing.json > /dev/null
+
+      - name: Create pull request if prices changed
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: automation/update-pricing
+          delete-branch: true
+          commit-message: "chore: update AI model pricing"
+          title: "chore: daily AI model pricing update"
+          body: |
+            Automated daily update of AI model input/output pricing.
+
+            Please review the source prices and any changed or unmatched models
+            before merging.
+          labels: |
+            automated
+            pricing
+          add-paths: pricing.json
+          
